@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RolRequest {
+public class RoleRequest {
     @NotBlank(message = "El nombre es requerido")
     @Size(max = 20,message = "El nombre no debe superar 20 caracteres")
-    private String nombre;
+    private String name;
 }

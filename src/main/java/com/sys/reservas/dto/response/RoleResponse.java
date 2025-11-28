@@ -1,4 +1,4 @@
-package com.sys.reservas.dto.request.response;
+package com.sys.reservas.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class RolResponse {
+public class RoleResponse {
     private Long id;
     private String name;
 }

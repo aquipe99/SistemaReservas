@@ -1,6 +1,6 @@
 package com.sys.reservas.repository;
 
-import com.sys.reservas.dto.response.MenuPermissionDTO;
+import com.sys.reservas.dto.response.MenuPermissionResponse;
 import com.sys.reservas.entity.Menu;
 import com.sys.reservas.entity.RoleMenu;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,15 +15,22 @@ public interface RoleMenuRepository extends JpaRepository<RoleMenu, Long> {
     @Query("SELECT rm.menu FROM RoleMenu rm WHERE rm.role.id = :roleId")
     List<Menu> findMenusByRoleId(@Param("roleId") Long roleId);
 
+
     @Query("""
-    SELECT new com.sys.reservas.dto.response.MenuPermissionDTO(
-        m.id, m.description, m.link, m.icon, rm.canCreate, rm.canRead, rm.canUpdate, rm.canDelete
+    SELECT new com.sys.reservas.dto.response.MenuPermissionResponse(
+        m.id,
+        m.description,
+        m.link,
+        m.icon,    
+        m.parentMenu,
+        m.menuOrder
     )
-    FROM RoleMenu rm
-    JOIN rm.menu m
-    WHERE rm.role.id = :roleId
+    FROM Menu m
+    LEFT JOIN RoleMenu rm ON rm.menu.id = m.id AND rm.role.id = :roleId
+    WHERE m.active = true
+    ORDER BY m.parentMenu, m.menuOrder
     """)
-    List<MenuPermissionDTO> findMenusWithPermissionsByRoleId(@Param("roleId") Long roleId);
+    List<MenuPermissionResponse> findMenusWithPermissionsByRoleId(@Param("roleId") Long roleId);
 
     @Query("""
     SELECT CASE WHEN COUNT(rm) > 0 THEN TRUE ELSE FALSE END

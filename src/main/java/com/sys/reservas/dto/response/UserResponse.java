@@ -15,5 +15,5 @@ public class UserResponse {
     private String name;
     private String email;
     private String role;
-    private List<MenuPermissionDTO> menus;
+    private List<MenuPermissionResponse> menus;
 }

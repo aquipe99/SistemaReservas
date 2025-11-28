@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,6 +22,11 @@ public class Role {
     private long id;
     @Column(nullable = false, unique = true,length = 20)
     private String name;
+
+    private Integer createdBy;
+    private LocalDateTime createdAt;
+    private Integer modifiedBy;
+    private LocalDateTime modifiedAt;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RoleMenu> menus;

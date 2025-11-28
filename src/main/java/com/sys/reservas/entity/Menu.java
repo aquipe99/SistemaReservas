@@ -18,13 +18,13 @@ public class Menu {
     private Long id;
     @Column(nullable = false,unique = true,length = 100)
     private String description;
-    @Column(nullable = false,length = 100)
+    @Column(length = 100)
     private String link;
     @Column(nullable = false,length = 100)
     private String icon;
     @Column(nullable = false)
     private Boolean active;
-    private Integer parentMenu;
+    private Long parentMenu;
     @Column(nullable = false)
-    private Integer menuOrder;
+    private Long menuOrder;
 }

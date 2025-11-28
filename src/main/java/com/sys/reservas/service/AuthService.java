@@ -17,8 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import org.springframework.stereotype.Service;
-import java.util.List;
 
+import java.util.*;
 
 
 @Service
@@ -42,16 +42,48 @@ public class AuthService {
 
         List<Menu> menus = roleMenuRepository.findMenusByRoleId(user.getRole().getId());
 
-        List<MenuPermissionDTO> menuDtos = roleMenuRepository.findMenusWithPermissionsByRoleId(user.getRole().getId());
+        List<MenuPermissionResponse> flatMenus  = roleMenuRepository.findMenusWithPermissionsByRoleId(user.getRole().getId());
+
+        List<MenuPermissionResponse> menuTree = buildMenuTree(flatMenus);
 
         UserResponse userDto = new UserResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getRole().getName(),
-                menuDtos
+                menuTree
         );
 
         return new LoginResponse(token, userDto);
     }
+
+    private List<MenuPermissionResponse> buildMenuTree(List<MenuPermissionResponse> menus) {
+        Map<Long, MenuPermissionResponse> map = new HashMap<>();
+
+        // Indexar por ID
+        for (MenuPermissionResponse m : menus) {
+            map.put(m.getId(), m);
+        }
+
+        List<MenuPermissionResponse> root = new ArrayList<>();
+
+        // Construir árbol
+        for (MenuPermissionResponse menu : menus) {
+            if (menu.getParentMenuId() == null) {
+                root.add(menu);
+            } else {
+                MenuPermissionResponse parent = map.get(menu.getParentMenuId().longValue());
+                if (parent != null) {
+                    parent.getItems().add(menu);
+                }
+            }
+        }
+
+        // Ordenar por menu_order
+        root.sort(Comparator.comparing(MenuPermissionResponse::getOrder));
+        map.values().forEach(m -> m.getItems().sort(Comparator.comparing(MenuPermissionResponse::getOrder)));
+
+        return root;
+    }
+
 }
