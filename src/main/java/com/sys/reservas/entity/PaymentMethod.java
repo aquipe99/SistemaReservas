@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "payment_method")
@@ -18,11 +19,11 @@ public class PaymentMethod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(length = 100,unique = true,nullable = false)
     private String name;
+    private Boolean status;
     private Integer createdBy;
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
     private Integer modifiedBy;
-    private LocalDateTime modifiedAt;
+    private OffsetDateTime modifiedAt;
 }

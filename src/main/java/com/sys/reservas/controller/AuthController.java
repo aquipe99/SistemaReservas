@@ -6,6 +6,7 @@ import com.sys.reservas.dto.response.LoginResponse;
 import com.sys.reservas.entity.User;
 import com.sys.reservas.repository.UserRepository;
 import com.sys.reservas.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,10 +31,10 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encodedPassword = encoder.encode("admin123");
-        System.out.println(encodedPassword);
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //String encodedPassword = encoder.encode("admin123");
+        //System.out.println(encodedPassword);
         return authService.login(request);
     }
 }

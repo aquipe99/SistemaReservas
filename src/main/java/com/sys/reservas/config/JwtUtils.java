@@ -8,7 +8,6 @@ import java.util.HashMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.function.Function;
 import io.jsonwebtoken.security.Keys;
@@ -18,8 +17,8 @@ import org.springframework.stereotype.Component;
 public class JwtUtils {
 
     private static  final String  SECRET_KEY = "my_secret_key_which_should_be_long_and_secure_123456";
-    private static final long EXPIRATION_MS = 86400000; // 1 día
-
+    //private static final long EXPIRATION_MS = 86400000; // 1 día
+    private static final long EXPIRATION_MS = 60000; // 1 día
     public String extractUsername(String token){
         return extractAllClaims(token).getSubject();
     }
@@ -42,7 +41,7 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(User userDetails, String role) {
+    public String generateToken(UserDetails userDetails, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
         return createToken(claims, userDetails.getUsername());

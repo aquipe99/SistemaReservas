@@ -3,6 +3,7 @@ package com.sys.reservas.service;
 
 
 
+import com.sys.reservas.config.CustomUserDetails;
 import com.sys.reservas.config.JwtUtils;
 import com.sys.reservas.dto.request.LoginRequest;
 import com.sys.reservas.dto.response.*;
@@ -13,9 +14,11 @@ import com.sys.reservas.repository.RoleMenuRepository;
 import com.sys.reservas.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,14 +34,25 @@ public class AuthService {
     private final MenuMapper menuMapper;
 
     public LoginResponse login(LoginRequest request) {
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        Authentication authentication;
+        try {
+            authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        }
+        catch (BadCredentialsException e){
+
+            throw new BadCredentialsException("Credenciales incorrectas");
+
+
+        }
+
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        String token = jwtUtils.generateToken((org.springframework.security.core.userdetails.User) authentication.getPrincipal(),user.getRole().getName());
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+        String token = jwtUtils.generateToken(userDetails,user.getRole().getName());
 
         List<Menu> menus = roleMenuRepository.findMenusByRoleId(user.getRole().getId());
 
@@ -78,11 +92,8 @@ public class AuthService {
                 }
             }
         }
-
-        // Ordenar por menu_order
         root.sort(Comparator.comparing(MenuPermissionResponse::getOrder));
         map.values().forEach(m -> m.getItems().sort(Comparator.comparing(MenuPermissionResponse::getOrder)));
-
         return root;
     }
 
