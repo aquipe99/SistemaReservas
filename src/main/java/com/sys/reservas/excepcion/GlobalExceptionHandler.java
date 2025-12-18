@@ -3,6 +3,7 @@ package com.sys.reservas.excepcion;
 import com.sys.reservas.dto.response.ResponseBase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // 🔹 Errores de validación (DTOs con @Valid)
+    //  Errores de validación (DTOs con @Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseBase<Map<String, String>>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    // 🔹 Credenciales incorrectas
+    //  Credenciales incorrectas
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseBase<Object>> handleBadCredentials(BadCredentialsException ex) {
 
@@ -47,8 +48,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+    //  acceso denegado
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResponseBase<Object>> handleAccessDenied(
+            AccessDeniedException ex) {
 
-    // 🔹 Usuario no encontrado
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ResponseBase<>(403, ex.getMessage(), Optional.empty())
+        );
+    }
+    //  Usuario no encontrado
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ResponseBase<Object>> handleUserNotFound(UsernameNotFoundException ex) {
 
@@ -61,7 +70,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    // 🔹 Cualquier otra excepción genérica
+    //  Cualquier otra excepción genérica
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseBase<Object>> handleRuntime(RuntimeException ex) {
 

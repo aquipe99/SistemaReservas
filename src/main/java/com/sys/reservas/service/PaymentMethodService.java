@@ -65,20 +65,21 @@ public class PaymentMethodService implements PaymentMethodImpl {
     public ResponseBase<PaymentMethodResponse> update(Long id, PaymentMethodRequest request) {
         Optional<PaymentMethod> existing = repository.findById(id);
         if(existing.isEmpty()){
-            return new ResponseBase<>(404,"Rol no ecnontrado",Optional.empty());
+            return new ResponseBase<>(404,"Regsitro no ecnontrado",Optional.empty());
         }
         PaymentMethod paymentMethod = existing.get();
         paymentMethod.setName(request.getName());
+        paymentMethod.setStatus(request.getStatus());
         PaymentMethod updated = repository.save(paymentMethod);
-        return new ResponseBase<>(200,"Rol actulizado correctamente",Optional.of(mapper.toResponse(updated)));
+        return new ResponseBase<>(200,"Regsitro actualizado correctamente",Optional.of(mapper.toResponse(updated)));
     }
 
     @Override
     public ResponseBase<Void> delete(Long id) {
         if(!repository.existsById(id)){
-            return new ResponseBase<>(404, "Rol no encontrado", Optional.empty());
+            return new ResponseBase<>(404, "Regsitro encontrado", Optional.empty());
         }
         repository.deleteById(id);
-        return new ResponseBase<>(200, "Rol eliminado correctamente", Optional.empty());
+        return new ResponseBase<>(200, "Regsitro eliminado correctamente", Optional.empty());
     }
 }

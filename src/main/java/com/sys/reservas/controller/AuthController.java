@@ -3,6 +3,8 @@ package com.sys.reservas.controller;
 import com.sys.reservas.config.JwtUtils;
 import com.sys.reservas.dto.request.LoginRequest;
 import com.sys.reservas.dto.response.LoginResponse;
+import com.sys.reservas.dto.response.ResponseBase;
+import com.sys.reservas.dto.response.UserResponse;
 import com.sys.reservas.entity.User;
 import com.sys.reservas.repository.UserRepository;
 import com.sys.reservas.service.AuthService;
@@ -13,10 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,5 +35,10 @@ public class AuthController {
         //String encodedPassword = encoder.encode("admin123");
         //System.out.println(encodedPassword);
         return authService.login(request);
+    }
+
+    @GetMapping("/me")
+    public ResponseBase<UserResponse> me(Authentication authentication) {
+        return authService.getCurrentUser(authentication);
     }
 }

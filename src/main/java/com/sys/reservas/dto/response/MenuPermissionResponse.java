@@ -18,6 +18,10 @@ public class MenuPermissionResponse {
     private String icon;
     private Long  parentMenuId;
     private Long  order;
+    private boolean canCreate;
+    private boolean canRead;
+    private boolean canUpdate;
+    private boolean canDelete;
     private List<MenuPermissionResponse> items = new ArrayList<>();
 
     public MenuPermissionResponse(
@@ -26,7 +30,11 @@ public class MenuPermissionResponse {
             String link,
             String icon,
             Long  parentMenuId,
-            Long  order
+            Long  order,
+            boolean canCreate,
+            boolean canRead,
+            boolean canUpdate,
+            boolean canDelete
     ) {
         this.id = id;
         this.description = description;
@@ -34,5 +42,9 @@ public class MenuPermissionResponse {
         this.icon = icon;
         this.parentMenuId = parentMenuId;
         this.order = order;
+        this.canCreate =canCreate;
+        this.canRead = canRead;
+        this.canUpdate = canUpdate;
+        this.canDelete = canDelete;
     }
 }

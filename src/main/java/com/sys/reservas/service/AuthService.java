@@ -70,7 +70,31 @@ public class AuthService {
 
         return new LoginResponse(token, userDto);
     }
+    public ResponseBase<UserResponse> getCurrentUser(Authentication authentication) {
+        if(authentication == null || !authentication.isAuthenticated()) {
+            throw new BadCredentialsException("Usuario no autenticado");
+        }
 
+        String email = authentication.getName(); // viene del JWT
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        List<MenuPermissionResponse> flatMenus =
+                roleMenuRepository.findMenusWithPermissionsByRoleId(user.getRole().getId());
+
+        List<MenuPermissionResponse> menuTree = buildMenuTree(flatMenus);
+
+        UserResponse userDto = new UserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().getName(),
+                menuTree
+        );
+
+        return new ResponseBase<>(200, "Usuario actual", Optional.of(userDto));
+    }
     private List<MenuPermissionResponse> buildMenuTree(List<MenuPermissionResponse> menus) {
         Map<Long, MenuPermissionResponse> map = new HashMap<>();
 

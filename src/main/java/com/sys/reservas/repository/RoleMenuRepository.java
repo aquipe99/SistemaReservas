@@ -23,7 +23,11 @@ public interface RoleMenuRepository extends JpaRepository<RoleMenu, Long> {
         m.link,
         m.icon,    
         m.parentMenu,
-        m.menuOrder
+        m.menuOrder,
+        COALESCE(rm.canCreate, false),
+        COALESCE(rm.canRead, false),
+        COALESCE(rm.canUpdate, false),
+        COALESCE(rm.canDelete, false)
     )
     FROM Menu m
     LEFT JOIN RoleMenu rm ON rm.menu.id = m.id AND rm.role.id = :roleId

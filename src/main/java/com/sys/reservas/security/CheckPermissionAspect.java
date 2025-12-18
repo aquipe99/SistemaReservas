@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ public class CheckPermissionAspect {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated()) {
-            throw new SecurityException("Unauthorized");
+            throw new AuthenticationCredentialsNotFoundException("Unauthorized");
         }
 
         // ✅ Obtenemos el rol (por ejemplo: ROLE_ADMIN -> ADMIN)
@@ -41,7 +43,7 @@ public class CheckPermissionAspect {
         }
 
         if (!allowed) {
-            throw new SecurityException("Access denied: " + checkPermission.menu() + " / " + checkPermission.action());
+            throw new AccessDeniedException("Access denied: " + checkPermission.menu() + " / " + checkPermission.action());
         }
 
         System.out.println("✅ Access GRANTED for role=" + roleName +

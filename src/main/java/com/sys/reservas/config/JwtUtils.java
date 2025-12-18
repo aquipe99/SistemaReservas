@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 public class JwtUtils {
 
     private static  final String  SECRET_KEY = "my_secret_key_which_should_be_long_and_secure_123456";
-    //private static final long EXPIRATION_MS = 86400000; // 1 día
-    private static final long EXPIRATION_MS = 60000; // 1 día
+    private static final long EXPIRATION_MS = 86400000; // 1 día
+    //private static final long EXPIRATION_MS = 60000; // 1 día
     public String extractUsername(String token){
         return extractAllClaims(token).getSubject();
     }
