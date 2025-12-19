@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
         ResponseBase<Map<String, String>> response = new ResponseBase<>(
                 400,
                 "Error de validación",
-                Optional.of(errors)
+                errors
         );
 
         return ResponseEntity.badRequest().body(response);
@@ -42,8 +42,7 @@ public class GlobalExceptionHandler {
 
         ResponseBase<Object> response = new ResponseBase<>(
                 401,
-                "Credenciales incorrectas",
-                Optional.empty()
+                "Credenciales incorrectas"
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -54,7 +53,7 @@ public class GlobalExceptionHandler {
             AccessDeniedException ex) {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new ResponseBase<>(403, ex.getMessage(), Optional.empty())
+                new ResponseBase<>(403, ex.getMessage())
         );
     }
     //  Usuario no encontrado
@@ -63,8 +62,7 @@ public class GlobalExceptionHandler {
 
         ResponseBase<Object> response = new ResponseBase<>(
                 404,
-                "Usuario no encontrado",
-                Optional.empty()
+                "Usuario no encontrado"
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -76,8 +74,7 @@ public class GlobalExceptionHandler {
 
         ResponseBase<Object> response = new ResponseBase<>(
                 500,
-                ex.getMessage(),
-                Optional.empty()
+                ex.getMessage()
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

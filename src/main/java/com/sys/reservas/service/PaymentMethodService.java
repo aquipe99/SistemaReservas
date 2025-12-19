@@ -16,11 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -30,7 +33,7 @@ public class PaymentMethodService implements PaymentMethodImpl {
     private final PaymentMethodRepository repository;
     private final PaymentMethodMapper mapper;
     @Override
-    public ResponseBase<Page<PaymentMethodResponse>> findAll(int page, int size, String sortField, String sortOrder, String globalFilter) {
+    public ResponseEntity<ResponseBase<Page<PaymentMethodResponse>>> findAll(int page, int size, String sortField, String sortOrder, String globalFilter) {
         Sort sort = Sort.by(sortField == null ? "id": sortField);
         sort ="desc".equalsIgnoreCase(sortOrder)
                 ? sort.descending()
@@ -41,45 +44,58 @@ public class PaymentMethodService implements PaymentMethodImpl {
         Page<PaymentMethod> paymentMethods = repository.findAll(spec,pageable);
 
         Page<PaymentMethodResponse> mappedPage = paymentMethods.map(mapper::toResponse);
-        return new ResponseBase<>(200, "Listado correcto", Optional.of(mappedPage));
+        return ResponseEntity.ok(new ResponseBase<>(200, "Listado correcto", Optional.of(mappedPage)));
 
     }
-
     @Override
-    public ResponseBase<PaymentMethodResponse> create(PaymentMethodRequest request) {
+    public ResponseEntity<ResponseBase<PaymentMethodResponse>> create(PaymentMethodRequest request) {
         if(repository.findByName(request.getName()).isPresent())
         {
-            return new ResponseBase<>(400, "El nombre ya existe", Optional.empty());
-
+            Map<String, String> errors = new HashMap<>();
+            errors.put("name", "El nombre ya existe");
+            return ResponseEntity.badRequest().body(
+                    new ResponseBase<>(400, "Error de validación", errors)
+            );
         }
         PaymentMethod paymentMethod = mapper.toEntity(request);
         paymentMethod.setCreatedBy(SecurityUtils.getCurrentUserId());
         paymentMethod.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC)); // createat
 
         PaymentMethod saved = repository.save(paymentMethod);
-        return new ResponseBase<>(200,"Creado Correctamente",Optional.of(mapper.toResponse(saved)));
+        return ResponseEntity.ok(new ResponseBase<>(200, "Creado correctamente", Optional.of(mapper.toResponse(saved))));
     }
     //OffsetDateTime utc = paymentMethod.getCreatedAt();
     //ZonedDateTime peruTime = utc.atZoneSameInstant(ZoneId.of("America/Lima"));
     @Override
-    public ResponseBase<PaymentMethodResponse> update(Long id, PaymentMethodRequest request) {
+    public ResponseEntity<ResponseBase<PaymentMethodResponse>> update(Long id, PaymentMethodRequest request) {
         Optional<PaymentMethod> existing = repository.findById(id);
         if(existing.isEmpty()){
-            return new ResponseBase<>(404,"Regsitro no ecnontrado",Optional.empty());
+            ResponseBase<PaymentMethodResponse> response = new ResponseBase<>(404, "Registro no encontrado", Optional.empty());
+            return ResponseEntity.status(404).body(response);
+        }
+        if(repository.findByName(request.getName()).isPresent())
+        {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("name", "El nombre ya existe");
+            return ResponseEntity.badRequest().body(
+                    new ResponseBase<>(400, "Error de validación", errors)
+            );
         }
         PaymentMethod paymentMethod = existing.get();
         paymentMethod.setName(request.getName());
         paymentMethod.setStatus(request.getStatus());
         PaymentMethod updated = repository.save(paymentMethod);
-        return new ResponseBase<>(200,"Regsitro actualizado correctamente",Optional.of(mapper.toResponse(updated)));
+        return ResponseEntity.ok(new ResponseBase<>(200, "Registro actualizado correctamente", Optional.of(mapper.toResponse(updated))));
     }
 
     @Override
-    public ResponseBase<Void> delete(Long id) {
+    public ResponseEntity<ResponseBase<Void>> delete(Long id) {
         if(!repository.existsById(id)){
-            return new ResponseBase<>(404, "Regsitro encontrado", Optional.empty());
+            ResponseBase<Void> response = new ResponseBase<>(404, "Registro no encontrado", Optional.empty());
+            return ResponseEntity.status(404).body(response);
         }
         repository.deleteById(id);
-        return new ResponseBase<>(200, "Regsitro eliminado correctamente", Optional.empty());
+        return ResponseEntity.ok(new ResponseBase<>(200, "Registro eliminado correctamente", Optional.empty()));
     }
+
 }

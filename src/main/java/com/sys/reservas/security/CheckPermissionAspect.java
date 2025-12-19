@@ -45,9 +45,9 @@ public class CheckPermissionAspect {
         if (!allowed) {
             throw new AccessDeniedException("Access denied: " + checkPermission.menu() + " / " + checkPermission.action());
         }
-
-        System.out.println("✅ Access GRANTED for role=" + roleName +
-                " on menu=" + requestedMenu +
-                " with action=" + checkPermission.action());
+//
+//        System.out.println("✅ Access GRANTED for role=" + roleName +
+//                " on menu=" + requestedMenu +
+//                " with action=" + checkPermission.action());
     }
 }
