@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
 
 @Entity
 @Table(name = "court")
@@ -20,12 +21,12 @@ public class Court {
     private Long id;
     @Column(nullable = false,unique = true,length = 20)
     private String name;
-    @Column(length = 100)
+    @Column(nullable = false,length = 100)
     private String description;
     private Integer createdBy;
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
     private Integer modifiedBy;
-    private LocalDateTime modifiedAt;
+    private OffsetDateTime modifiedAt;
     @Column(nullable = false)
     private Boolean status;
 }

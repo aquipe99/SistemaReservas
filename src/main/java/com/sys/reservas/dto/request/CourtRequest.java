@@ -12,10 +12,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentMethodRequest {
+public class CourtRequest {
     @NotBlank(message = "El nombre es requerido")
-    @Size(max = 20,message = "El nombre no debe superar 100 caracteres")
+    @Size(max = 20,message = "El nombre no debe superar 20 caracteres")
     private String name;
+    @Size(max = 100,message = "La descripcion no debe superar 100 caracteres")
+    private String description;
     @NotNull(message = "El estado es requerido")
     private Boolean status;
 }
